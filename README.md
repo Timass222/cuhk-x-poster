@@ -45,6 +45,23 @@ P1 = 0.545 → 0.545^0.75 = 0.634 → 0.34 after renormalising over the 40 class
 0.116^0.85 = 0.16 and *Use a mobile phone* 0.382^0.85 = 0.44. Products 0.16 × 0.34 = 0.054 and 0.44 × 0.011 = 0.005;
 normalised over all 40 classes that is 0.74 vs 0.07. Full forward–backward gives 0.72 vs 0.07.
 
+Worked example with a transition never seen in training (step 2 of the video, left panel of the poster): after
+*Sit down → Tap the keyboard* (18 training lists) *Write* never came next, so the pseudo-count 0.1 gives
+P2(Write) = (0 + 0.1) / (18 + 40 · 0.1) = 0.0045, against P2(Check the time) = 0.595. Mixed with one action back:
+
+| | 0.75 · P2 | + 0.25 · P1 | = mix | ^0.75 | T after renormalising |
+|---|---|---|---|---|---|
+| Check the time | 0.447 | 0.089 (P1 0.355) | 0.535 | 0.626 | **0.347** |
+| Write | 0.003 | 0.039 (P1 0.157) | 0.043 | 0.094 | **0.052** |
+
+Never seen in training means unlikely, not impossible. The clip says Write 0.226^0.85 = 0.28 vs Check the time
+0.069^0.85 = 0.10 (about 3 : 1); products 0.10 × 0.347 = 0.036 vs 0.28 × 0.052 = 0.015, so Check the time wins.
+To keep Write, the clip would have needed about 9 : 1. Full forward–backward gives 0.29 vs 0.22, because it also
+weighs the uncertainty of the earlier clips.
+
+If a pair (a, b) never occurred in training at all, P2 is uniform (1/40) and T falls back to a flattened first-order
+table. On the hidden test this applies to 23 of the 146 clips that have two predecessors in their list.
+
 ## Run it
 
 1. Download `model.pth` from the [latest release](https://github.com/Timass222/cuhk-x-poster/releases/latest)
