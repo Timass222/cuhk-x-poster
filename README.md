@@ -2,7 +2,7 @@
 
 Team Timass · CUHK-X Challenge, Small Model Track · UbiComp / ISWC 2026 Grand Finals
 
-**▶ Video: [what the session decoder changes, step by step](https://timass222.github.io/cunh_x-poster/)**
+**▶ Video: [what the session decoder changes, step by step](https://timass222.github.io/cuhk-x-poster/)**
 
 - **Task.** 40 daily activities recognised from depth, infrared, skeleton and IMU clips (no RGB), tested on
   people never seen in training.
@@ -47,7 +47,7 @@ normalised over all 40 classes that is 0.74 vs 0.07. Full forward–backward giv
 
 ## Run it
 
-1. Download `model.pth` from the [latest release](https://github.com/Timass222/cunh_x-poster/releases/latest)
+1. Download `model.pth` from the [latest release](https://github.com/Timass222/cuhk-x-poster/releases/latest)
    into `artifacts/model.pth`.
 2. Install the pinned environment: `pip install -r environment/requirements.txt`, or build
    `environment/Dockerfile`.

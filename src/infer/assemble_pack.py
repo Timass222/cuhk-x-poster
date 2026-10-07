@@ -63,7 +63,7 @@ ap.add_argument("--proto-feat", default=None, help="OOF-признаки (experi
 ap.add_argument("--ctrgcn-src", default="skeleton_ctrgcn", help="experiments/<dir>/fold{k}.pth для CTR-GCN")
 ap.add_argument("--views", nargs="*", default=[], help="виды TTA на тесте по веткам: r34c5=1|roll3|tta6 thermal=... dir=... (дефолт tta6)")
 A = ap.parse_args()
-ROOT = Path(r"d:\cunh-x")
+ROOT = Path(r"d:\cuhk-x")
 E = ROOT / "experiments"
 SPEC = ([] if A.no_r34 else [("r34c5", E / A.r34_src, A.r34_bits)]) + ([] if A.no_dir else [("dir", E / A.dir_src, A.dir_bits)]) + ([] if A.no_thermal else [("thermal", E / A.thermal_src, A.thermal_bits)])
 if A.vit_src:

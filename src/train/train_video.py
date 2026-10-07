@@ -374,7 +374,7 @@ def main():
     ap.add_argument("--no-pretrained", action="store_true")
     ap.add_argument("--num-workers", type=int, default=2)
     ap.add_argument("--prefetch", type=int, default=0, help="поток-префетчер при num-workers 0 (глубина очереди)")
-    ap.add_argument("--cache-root", default=None, help="каталог кэшей (дефолт data/cache или env CUNHX_CACHE)")
+    ap.add_argument("--cache-root", default=None, help="каталог кэшей (дефолт data/cache или env CUHKX_CACHE)")
     ap.add_argument("--frames", type=int, default=16)
     ap.add_argument("--crop", type=int, default=112, help="spatial crop from the cache (cache 128 -> 112; 160 -> 128/144)")
     ap.add_argument("--dense", type=int, default=0, help="stride of a contiguous window (0 = TSN segments over the clip)")
@@ -411,8 +411,8 @@ def main():
     CROP = args.crop
     DENSE = args.dense
     import os
-    if args.cache_root or os.environ.get("CUNHX_CACHE"):
-        CACHE = Path(args.cache_root or os.environ["CUNHX_CACHE"])
+    if args.cache_root or os.environ.get("CUHKX_CACHE"):
+        CACHE = Path(args.cache_root or os.environ["CUHKX_CACHE"])
     print(f"cache root: {CACHE} | frames {N_FRAMES} crop {CROP} dense {DENSE}", flush=True)
     device = "cuda" if torch.cuda.is_available() else "cpu"
     out_dir = Path(args.out)

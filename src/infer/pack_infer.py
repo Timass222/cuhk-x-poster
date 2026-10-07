@@ -53,8 +53,8 @@ ap.add_argument("--ref", default=None, help="эталонный CSV для св�
 ap.add_argument("--test-csv", default=None, help="CSV с колонкой path (дефолт: META/test_paths.csv, иначе ROOT/test.csv)")
 args = ap.parse_args()
 import os  # noqa: E402
-CACHE = Path(os.environ.get("CUNHX_CACHE", ROOT / "data/cache"))
-META = Path(os.environ.get("CUNHX_META", ROOT / "data/meta"))
+CACHE = Path(os.environ.get("CUHKX_CACHE", ROOT / "data/cache"))
+META = Path(os.environ.get("CUHKX_META", ROOT / "data/meta"))
 print(f"кэши {CACHE} | мета {META}")
 dev = "cuda" if (torch.cuda.is_available() and torch.cuda.device_count() > 0) else "cpu"  # CUDA_VISIBLE_DEVICES= on Windows: is_available() True, 0 devices
 EPS, K = 1e-12, 40

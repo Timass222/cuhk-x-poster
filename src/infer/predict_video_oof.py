@@ -26,8 +26,8 @@ import train.train_video as tv  # noqa: E402
 
 import os  # noqa: E402
 ROOT = Path(__file__).resolve().parents[2]
-META = Path(os.environ.get("CUNHX_META", ROOT / "data/meta"))
-CACHE = Path(os.environ.get("CUNHX_CACHE", ROOT / "data/cache"))
+META = Path(os.environ.get("CUHKX_META", ROOT / "data/meta"))
+CACHE = Path(os.environ.get("CUHKX_CACHE", ROOT / "data/cache"))
 
 
 class RollDS(VideoDS):

@@ -32,7 +32,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "src" / "data" / "preprocess"))
 from frames import frame_sort_key, open_archive, is_junk  # noqa: E402
 
-META = Path(os.environ.get("CUNHX_META", ROOT / "data/meta"))
+META = Path(os.environ.get("CUHKX_META", ROOT / "data/meta"))
 N_PROBE, CONF, BATCH = 12, 0.25, 48
 MARGIN, MIN_SIDE = 1.4, 0.35
 

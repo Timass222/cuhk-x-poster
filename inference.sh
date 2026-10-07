@@ -53,9 +53,9 @@ if [ -z "${PYTHON:-}" ]; then
   else PYTHON="python3"; fi
 fi
 export PYTHONIOENCODING=utf-8
-export CUNHX_META="$WORK/meta"
-export CUNHX_CACHE="$WORK/cache"
-mkdir -p "$CUNHX_META" "$CUNHX_CACHE"
+export CUHKX_META="$WORK/meta"
+export CUHKX_CACHE="$WORK/cache"
+mkdir -p "$CUHKX_META" "$CUHKX_CACHE"
 LOG="$WORK/inference.log"
 T0=$(date +%s)
 step() { echo; echo "=========== $(date +%H:%M:%S) (+$(( $(date +%s) - T0 ))s) $1 ==========="; }
@@ -85,7 +85,7 @@ echo "branch inputs needed by the pack: $NEEDED"
 need() { case " $NEEDED " in *" $1 "*) return 0;; *) return 1;; esac; }
 
 step "(1) meta: clip index, sessions (gap 1800 s), output paths"
-$PYTHON src/infer/make_test_meta.py --src "$SRC" --meta "$CUNHX_META"
+$PYTHON src/infer/make_test_meta.py --src "$SRC" --meta "$CUHKX_META"
 
 step "(2) frames 128px: Depth_Color, IR, Thermal"
 $PYTHON src/data/preprocess/frames.py --mod Depth_Color --split test --zip "$SRC"
@@ -102,10 +102,10 @@ $PYTHON src/infer/make_boxes.py --src "$SRC" --pack "$PACK"
 step "(5) crops from the original frames: dir branch (motion box) + R34/ViT branches (hybrid6 box)"
 need Depth_Colorcrop     && $PYTHON src/data/preprocess/crop_cache.py --mod Depth_Color --split test --zip "$SRC"
 need IRcrop              && $PYTHON src/data/preprocess/crop_cache.py --mod IR --bbox-mod Depth_Color --split test --zip "$SRC"
-need Depth_ColorRGBcrop6 && $PYTHON src/data/preprocess/crop_cache.py --mod Depth_Color --split test --zip "$SRC" --rgb --bbox-json "$CUNHX_META/bbox_hybrid6flat_test.json" --tag 6
-need IRcrop6             && $PYTHON src/data/preprocess/crop_cache.py --mod IR --bbox-mod Depth_Color --split test --zip "$SRC" --bbox-json "$CUNHX_META/bbox_hybrid6flat_test.json" --tag 6
-need Depth_ColorRGBcrop6h && $PYTHON src/data/preprocess/crop_cache.py --mod Depth_Color --split test --zip "$SRC" --rgb --bbox-json "$CUNHX_META/bbox_hybrid6flat_test.json" --tag 6h --size 224
-need IRcrop6h             && $PYTHON src/data/preprocess/crop_cache.py --mod IR --bbox-mod Depth_Color --split test --zip "$SRC" --bbox-json "$CUNHX_META/bbox_hybrid6flat_test.json" --tag 6h --size 224
+need Depth_ColorRGBcrop6 && $PYTHON src/data/preprocess/crop_cache.py --mod Depth_Color --split test --zip "$SRC" --rgb --bbox-json "$CUHKX_META/bbox_hybrid6flat_test.json" --tag 6
+need IRcrop6             && $PYTHON src/data/preprocess/crop_cache.py --mod IR --bbox-mod Depth_Color --split test --zip "$SRC" --bbox-json "$CUHKX_META/bbox_hybrid6flat_test.json" --tag 6
+need Depth_ColorRGBcrop6h && $PYTHON src/data/preprocess/crop_cache.py --mod Depth_Color --split test --zip "$SRC" --rgb --bbox-json "$CUHKX_META/bbox_hybrid6flat_test.json" --tag 6h --size 224
+need IRcrop6h             && $PYTHON src/data/preprocess/crop_cache.py --mod IR --bbox-mod Depth_Color --split test --zip "$SRC" --bbox-json "$CUHKX_META/bbox_hybrid6flat_test.json" --tag 6h --size 224
 for M in Depth_ColorRGBcrop5 IRcrop5 Depth_ColorRGBcrop2 IRcrop2; do
   need $M && { echo "ERROR: pack needs $M (legacy crop tag) which this script does not build" >&2; exit 2; }
 done
