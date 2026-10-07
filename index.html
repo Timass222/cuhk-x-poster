@@ -6,29 +6,82 @@
 <title>Timestamps are a free sensor · Team Timass</title>
 <meta name="description" content="CUHK-X Challenge, UbiComp / ISWC 2026: a label-free session decoder for RGB-free activity recognition.">
 <style>
-  :root { --ink: #0b1b2e; --grey: #3d4a5c; --line: #c3ccd7; --amber: #f2a516; --pale: #fff0c7; --bg: #ffffff; --card: #f4f6f9; }
+  :root { --ink: #0b1b2e; --grey: #3d4a5c; --soft: #5a687a; --line: #c3ccd7; --amber: #f2a516; --hl: #fff0c7;
+          --bg: #ffffff; --card: #f4f6f9; }
   @media (prefers-color-scheme: dark) {
-    :root { --ink: #eef2f7; --grey: #aab4c2; --line: #3a4656; --pale: #2a2412; --bg: #0b1b2e; --card: #13263d; }
+    :root { --ink: #eef2f7; --grey: #aab4c2; --soft: #8d99a8; --line: #33415a; --hl: rgba(242, 165, 22, 0.16);
+            --bg: #0b1b2e; --card: #13263d; }
   }
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--bg); color: var(--ink);
          font: 17px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif; }
   main { max-width: 620px; margin: 0 auto; padding: 20px 16px 40px; }
+  p { margin: 0 0 12px; }
+  b { font-weight: 700; }
+  sub, sup { font-size: 0.72em; line-height: 0; }
+  .num { font-variant-numeric: tabular-nums; }
+
   .eyebrow { font-size: 14px; color: var(--grey); margin: 0 0 6px; }
   h1 { font-size: 30px; line-height: 1.15; margin: 0 0 4px; letter-spacing: -0.01em; }
   .rule { width: 72px; height: 6px; background: var(--amber); margin: 12px 0 18px; }
   video { display: block; width: 100%; aspect-ratio: 4 / 5; border-radius: 10px; background: var(--card); border: 1px solid var(--line); }
   .cap { font-size: 14px; color: var(--grey); margin: 8px 0 22px; }
-  p { margin: 0 0 12px; }
-  b { font-weight: 700; }
-  .actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 22px 0 26px; }
+
+  .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 18px 0 4px; }
+  .stat { background: var(--card); border-radius: 10px; padding: 12px 14px; }
+  .stat:first-child { grid-column: 1 / -1; border-left: 4px solid var(--amber); }
+  .stat b { display: block; font-size: 24px; line-height: 1.15; }
+  .stat span { display: block; font-size: 14px; line-height: 1.35; color: var(--grey); margin-top: 2px; }
+
+  .actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 22px 0 30px; }
   .btn { flex: 1 1 200px; display: block; text-align: center; padding: 13px 16px; border-radius: 10px;
          font-weight: 700; text-decoration: none; color: var(--ink); border: 2px solid var(--line); }
   .btn.primary { background: var(--amber); border-color: var(--amber); color: #0b1b2e; }
-  .how { border-top: 1px solid var(--line); padding-top: 18px; margin-bottom: 22px; font-size: 15px; }
-  .how h2 { font-size: 19px; margin: 0 0 10px; }
-  .formula { background: var(--card); border-left: 4px solid var(--amber); padding: 8px 12px; border-radius: 6px; overflow-x: auto; white-space: nowrap; }
+
+  .how { border-top: 1px solid var(--line); padding-top: 22px; margin-bottom: 26px; font-size: 15.5px; }
+  h2 { font-size: 21px; line-height: 1.25; margin: 0 0 12px; }
+  .lead { color: var(--grey); }
+  .formula { background: var(--card); border-left: 4px solid var(--amber); border-radius: 6px; padding: 10px 14px; margin: 0 0 8px;
+             font-size: 16px; line-height: 1.6; }
+  .formula .eq { display: inline-block; }
+  .defs { margin: 14px 0 10px; padding: 0; list-style: none; }
+  .defs li { display: grid; grid-template-columns: 92px 1fr; gap: 10px; padding: 8px 0; border-top: 1px solid var(--line); }
+  .defs li:last-child { border-bottom: 1px solid var(--line); }
+  .defs dt, .defs .k { font-weight: 700; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 26px; }
+  .chip { font-size: 13px; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line); color: var(--grey); white-space: nowrap; }
+
+  .ex { border: 1px solid var(--line); border-radius: 12px; padding: 16px; margin: 0 0 16px; }
+  .ex-head { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 12px; }
+  .badge { flex: none; width: 30px; height: 30px; border-radius: 15px; background: var(--amber); color: #0b1b2e;
+           font-weight: 800; display: flex; align-items: center; justify-content: center; }
+  .ex-head h3 { font-size: 17px; line-height: 1.3; margin: 2px 0 2px; }
+  .ex-head p { font-size: 13.5px; color: var(--grey); margin: 0; }
+  .ctx { font-size: 15px; }
+
+  .tbl-wrap { overflow-x: auto; margin: 10px 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; font-variant-numeric: tabular-nums; }
+  th { font-weight: 600; color: var(--grey); text-align: right; padding: 6px 5px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  td { text-align: right; padding: 8px 5px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th:first-child, td:first-child { text-align: left; padding-left: 0; }
+  td small { display: block; font-size: 12px; color: var(--soft); white-space: nowrap; }
+  tr.win td { background: var(--hl); font-weight: 700; }
+  tr.win td:first-child { box-shadow: inset 4px 0 0 var(--amber); padding-left: 10px; }
+
+  .steps { margin: 6px 0 0; padding: 0; list-style: none; counter-reset: s; }
+  .steps > li { position: relative; padding: 0 0 14px 34px; }
+  .steps > li::before { counter-increment: s; content: counter(s); position: absolute; left: 0; top: 1px; width: 22px; height: 22px;
+                        border-radius: 11px; border: 1.5px solid var(--soft); color: var(--grey); font-size: 12.5px; font-weight: 700;
+                        display: flex; align-items: center; justify-content: center; }
+  .steps > li > b:first-child { display: block; }
+  .steps .tbl-wrap { margin-left: -34px; }
+
+  .result { background: var(--hl); border-radius: 8px; padding: 10px 12px; margin: 6px 0 0; font-size: 15px; }
+  .callout { border-left: 4px solid var(--soft); background: var(--card); border-radius: 6px; padding: 10px 14px; margin: 12px 0 0; font-size: 15px; }
+  .ex .callout { margin-top: 10px; }
+
   footer { font-size: 14px; color: var(--grey); border-top: 1px solid var(--line); padding-top: 14px; }
+  footer a { color: inherit; }
 </style>
 </head>
 <body>
@@ -40,9 +93,13 @@
   <video src="decoder_ladder.mp4" poster="poster.jpg" autoplay muted loop playsinline controls preload="metadata"></video>
   <p class="cap">What the session decoder changes, step by step. Real hidden-test clips; about 1 minute, no sound.</p>
 
-  <p>We recognise <b>40 daily activities</b> from depth, infrared, skeleton and IMU clips, without RGB, on people never seen in training.</p>
-  <p>Clip start times chain the clips into sessions. A second-order decoder labels the whole session with no test labels: <b>75.8 → 86.4 %</b> on 405 hidden-test clips.</p>
-  <p>About <b>3/4 of that gain</b> comes from the order of everyday actions. The whole model is 94 MiB.</p>
+  <p>We recognise <b>40 daily activities</b> from depth, infrared, skeleton and IMU clips, without RGB, on people never seen in training. Clip start times chain the clips into sessions, and a second-order decoder labels the whole session with no test labels.</p>
+
+  <div class="stats">
+    <div class="stat"><b class="num">75.8 → 86.4 %</b><span>accuracy on 405 hidden-test clips, from decoding whole sessions</span></div>
+    <div class="stat"><b>≈ 3/4</b><span>of that gain comes from the order of everyday actions</span></div>
+    <div class="stat"><b>94 MiB</b><span>the whole model</span></div>
+  </div>
 
   <div class="actions">
     <a class="btn primary" href="https://github.com/Timass222/cuhk-x-poster">Code &amp; weights</a>
@@ -51,16 +108,72 @@
 
   <section class="how">
     <h2>How the decoder result is computed</h2>
-    <p>For every clip, each of the 40 classes gets</p>
-    <p class="formula">score(c) ∝ clip(c)<sup>0.85</sup> × T(a, b → c)</p>
-    <p class="formula">T(a, b → c) ∝ (0.75·P<sub>2</sub>(c | a, b) + 0.25·P<sub>1</sub>(c | b))<sup>0.75</sup></p>
-    <p>P<sub>1</sub> and P<sub>2</sub> are counted on the training lists, given the last one or two actions. The power 0.75 and renormalising over the 40 classes flatten them, so unseen transitions keep a small chance. Forward–backward runs this over the whole session, averaging over uncertain earlier clips and looking at the next clip too.</p>
-    <p><b>Example, step 1 of the video</b> (one action back only, so T ∝ P<sub>1</sub><sup>0.75</sup>). After Peel fruits, Eat food has P<sub>1</sub> = 0.545 → 0.545<sup>0.75</sup> = 0.634 → 0.34 after renormalising. The clip alone gives Eat food 0.116<sup>0.85</sup> = 0.16 and Use a mobile phone 0.382<sup>0.85</sup> = 0.44. Products: 0.16 × 0.34 = 0.054 and 0.44 × 0.011 = 0.005, which over all 40 classes is 0.74 vs 0.07. Full forward–backward gives 0.72 vs 0.07.</p>
-    <p><b>Example, step 2 of the video</b> (a transition never seen in training). After Sit down → Tap the keyboard (18 training lists), Write never came next: P<sub>2</sub> = (0 + 0.1) / (18 + 40·0.1) = 0.0045, against 0.595 for Check the time. Mixed with one action back (P<sub>1</sub>: 0.157 and 0.355), raised to 0.75 and renormalised, T is <b>0.347</b> for Check the time and <b>0.052</b> for Write: unlikely, not impossible. The clip says Write about 3 : 1 (0.28 vs 0.10 after ^0.85), so the products are 0.036 vs 0.015 and Check the time wins; the clip would have needed about 9 : 1 to keep Write. Full forward–backward gives 0.29 vs 0.22.</p>
-    <p>If a pair (a, b) never occurred in training, P<sub>2</sub> is uniform (1/40) and T falls back to a flattened first-order table: 23 of the 146 test clips with two predecessors.</p>
+    <p class="lead">For every clip, each of the 40 classes gets a score:</p>
+    <div class="formula">
+      <span class="eq">score(c) ∝ clip(c)<sup>0.85</sup> × T(a, b → c)</span>
+    </div>
+    <div class="formula">
+      <span class="eq">T(a, b → c) ∝</span>
+      <span class="eq">(0.75·P<sub>2</sub>(c | a, b) + 0.25·P<sub>1</sub>(c | b))<sup>0.75</sup></span>
+    </div>
+
+    <ul class="defs">
+      <li><span class="k">clip(c)</span><span>probability from the five fused branches for this clip alone</span></li>
+      <li><span class="k">P<sub>1</sub>, P<sub>2</sub></span><span>how often c followed the last one or the last two actions in the training lists</span></li>
+      <li><span class="k">^0.75</span><span>with renormalising over the 40 classes, flattens the tables, so unseen transitions keep a small chance</span></li>
+      <li><span class="k">session</span><span>forward–backward runs this over the whole session, averaging over uncertain earlier clips and looking at the next clip too</span></li>
+    </ul>
+    <div class="chips">
+      <span class="chip">clip power 0.85</span><span class="chip">two-back weight 0.75</span><span class="chip">flattening 0.75</span><span class="chip">pseudo-counts 0.5 / 0.1</span>
+    </div>
+
+    <article class="ex">
+      <div class="ex-head">
+        <div class="badge">1</div>
+        <div><h3>One action back</h3><p>Step 1 of the video · only one action back, so T ∝ P<sub>1</sub><sup>0.75</sup></p></div>
+      </div>
+      <p class="ctx">The previous action is <b>Peel fruits</b>. The clip alone says <b>Use a mobile phone</b>.</p>
+      <div class="tbl-wrap"><table>
+        <tr><th></th><th>clip<sup>0.85</sup></th><th>× T</th><th>= score</th><th>share</th></tr>
+        <tr class="win"><td>Eat food</td><td>0.16<small>0.116<sup>0.85</sup></small></td><td>0.34<small>P<sub>1</sub> 0.545</small></td><td>0.054</td><td>0.74</td></tr>
+        <tr><td>Use a mobile phone</td><td>0.44<small>0.382<sup>0.85</sup></small></td><td>0.011<small>P<sub>1</sub> 0.006</small></td><td>0.005</td><td>0.07</td></tr>
+      </table></div>
+      <p class="ctx">Where 0.34 comes from: 0.545<sup>0.75</sup> = 0.634, divided by the sum over all 40 classes. The share is the score over the sum of all 40 scores.</p>
+      <p class="result"><b>→ Eat food.</b> Full forward–backward gives 0.72 vs 0.07.</p>
+    </article>
+
+    <article class="ex">
+      <div class="ex-head">
+        <div class="badge">2</div>
+        <div><h3>Two actions back: a transition never seen in training</h3><p>Step 2 of the video · left panel of the poster</p></div>
+      </div>
+      <p class="ctx">The last two actions are <b>Sit down → Tap the keyboard</b>. The clip alone says <b>Write</b>: 0.226 vs 0.069 for Check the time, about 3 : 1.</p>
+      <ol class="steps">
+        <li><b>Count</b>This pair came up in 18 training lists. Check the time followed 13 times, Write never.</li>
+        <li><b>Smooth</b>Pseudo-count 0.1: P<sub>2</sub>(Write) = (0 + 0.1) / (18 + 40·0.1) = <span class="num">0.0045</span>; P<sub>2</sub>(Check the time) = 0.595.</li>
+        <li><b>Mix with one action back, flatten, renormalise</b>
+          <div class="tbl-wrap"><table>
+            <tr><th></th><th>P<sub>2</sub></th><th>P<sub>1</sub></th><th>mix</th><th>^0.75</th><th>T</th></tr>
+            <tr class="win"><td>Check the time</td><td>0.595</td><td>0.355</td><td>0.535</td><td>0.626</td><td>0.347</td></tr>
+            <tr><td>Write</td><td>0.0045</td><td>0.157</td><td>0.043</td><td>0.094</td><td>0.052</td></tr>
+          </table></div>
+        </li>
+        <li><b>Multiply by the clip</b>
+          <div class="tbl-wrap"><table>
+            <tr><th></th><th>clip<sup>0.85</sup></th><th>× T</th><th>= score</th></tr>
+            <tr class="win"><td>Check the time</td><td>0.10</td><td>0.347</td><td>0.036</td></tr>
+            <tr><td>Write</td><td>0.28</td><td>0.052</td><td>0.015</td></tr>
+          </table></div>
+        </li>
+      </ol>
+      <p class="result"><b>→ Check the time.</b> Full forward–backward gives 0.29 vs 0.22.</p>
+      <p class="callout"><b>Never seen ≠ impossible.</b> Write keeps T = 0.052. A clip about 9 : 1 sure of Write, instead of 3 : 1, would have kept it.</p>
+    </article>
+
+    <p class="callout"><b>Pairs never seen in training.</b> P<sub>2</sub> is uniform (1/40), so T falls back to a flattened first-order table. This happens for 23 of the 146 test clips with two predecessors.</p>
   </section>
 
-  <footer>Team Timass · CUHK-X Challenge, Small Model Track · Dataset: <a href="https://arxiv.org/abs/2512.07136" style="color:inherit">CUHK-X</a></footer>
+  <footer>Team Timass · CUHK-X Challenge, Small Model Track · Dataset: <a href="https://arxiv.org/abs/2512.07136">CUHK-X</a></footer>
 </main>
 </body>
 </html>
