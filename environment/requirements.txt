@@ -1,0 +1,13 @@
+# Top-level inference dependencies, pinned to the versions of the environment that produced the
+# leaderboard submissions (Windows 10, Python 3.13.15). docker/requirements.lock.txt is the full
+# resolved set inside the image (pip freeze) and is what the Dockerfile installs.
+# PyTorch wheels come from https://download.pytorch.org/whl/cu126.
+torch==2.13.0+cu126
+torchvision==0.28.0+cu126
+numpy==2.5.2
+pandas==3.0.5
+scipy==1.18.1
+scikit-learn==1.9.0   # the IMU HGB model is stored as a scikit-learn pickle: keep this version exact
+pillow==12.3.0
+opencv-python==5.0.0.93
+ultralytics==8.4.136  # YOLO11n person detector (weights are inside the pack)

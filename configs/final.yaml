@@ -1,0 +1,43 @@
+# Primary verification configuration (submission_id 56094379, PACK4_17U9).
+# Inference itself is not parameterised by this file: `artifacts/model.pth` is a self-contained
+# NumPy .npz pack that embeds its own fusion_cfg (branch weights, temperature, decoder tables,
+# adaptation/EM settings) and quantised branch weights. This file documents the training-time
+# configuration that produced that pack, for reproducibility review.
+seed: 0
+precision: "mixed int8/int6/int5 quantised branch weights (packed); fp32 compute, fp16 for YOLO11n"
+batch_size: 16  # ViT-B/16 fine-tuning batch size (train_video.py); inference runs one clip window at a time
+model_artifact: artifacts/model.pth
+
+training:
+  vit_branch:
+    backbone: "VideoMAEv2 ViT-B/16 (86.6M), distilled from ViT-g on Kinetics-710"
+    epochs: 20
+    optimizer: "AdamW lr 2e-4, wd 0.05, layer-wise LR decay 0.75, drop-path 0.2, EMA"
+    batch_size: 16
+    grad_checkpointing: true
+    train_split: "17 of 18 training users (user9 held out as validation)"
+    quantisation: "int6 per-output-row symmetric"
+  vit_ir_branch:
+    backbone: "VideoMAEv2 ViT-S/16 (22M), distilled from ViT-g on Kinetics-710"
+    fold: 0
+    quantisation: "int5"
+  skeleton_branch:
+    model: "CTR-GCN, folds 0/3/4"
+    pretrain: "PYSKL NTU-60 (2-D, joint)"
+    quantisation: "int8"
+  imu_branch:
+    models: ["HistGradientBoosting (scikit-learn) on physical IMU features", "IMU network x5 folds, int8"]
+  detector:
+    model: "YOLO11n (Ultralytics), fp16, used frozen for person boxes only"
+
+inference_pipeline:
+  - "temperature-scaled arithmetic fusion across branches (temperature fit on OOF NLL)"
+  - "session decoder pass 1 (repeat pooling, second-order transition tables, distinct-label-per-block repair)"
+  - "session-level prototype adaptation in ViT feature space (cosine prototypes, weight 0.3)"
+  - "label-free EM re-estimation of transition tables on the sample's own session structure (lambda 0.3, 1 iteration)"
+  - "session decoder pass 2"
+
+secondary_pack:
+  submission_id: 56058031
+  model_artifact: artifacts/model_pack3ira.pth
+  note: "Same branch set as above, but vit_branch trained with fold-3 users held out (users 1-8, 16, 17, 19-23 in training); imu_branch uses IMU TCN x3 instead of the IMU network; no EM re-estimation step. Selected via inference.sh's third argument (submission_id 56058031)."

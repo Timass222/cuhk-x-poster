@@ -1,0 +1,116 @@
+# CUHK-X verification manifest — team Timass, Small Model Track
+schema_version: 2
+
+team:
+  name: "Timass"
+  track: "small"
+  contact_email: "timapochta63@gmail.com"
+
+kaggle_submission_record:
+  path: "submission/submission_info.yaml"
+  selected_submission_count: 2
+
+solution:
+  type: "local_checkpoint"
+  entrypoint: "inference.sh"
+  primary_config: "configs/final.yaml"
+  source_root: "src"
+
+environment:
+  specification: "environment/requirements.txt"
+  dockerfile: "environment/Dockerfile"  # Docker preferred; see README §4. Build context is the package root:
+                                         #   docker build -f environment/Dockerfile -t timass-cuhkx .
+  docker_image: null  # not pre-built/exported in this package; build locally from environment/Dockerfile (see README §4)
+  operating_system: "Linux x86_64 (developed/validated on Windows 10 + Git Bash; Dockerfile targets python:3.13.15-slim-bookworm)"
+  python_version: "3.13.15"
+  cuda_or_accelerator_version: "CUDA 12.6 (torch/torchvision cu126 wheels); CPU-only also works, see README §3"
+  system_packages: ["libgl1", "libglib2.0-0"]  # required by opencv-python (imported by ultralytics) at import time
+
+hardware:
+  gpu_count: 1
+  minimum_gpu_memory_gb_per_gpu: 4  # peak measured 2.9 GB total on device (~1.8 GB above idle baseline), RTX 3060 Ti 8 GB
+  minimum_host_memory_gb: 16  # not separately profiled; conservative figure for torch + numpy caches + ViT-B/S in memory, see README §3
+  minimum_free_disk_gb: 15  # package (~200 MB) + per-run caches under work/ (frames/crops/features for the supplied test set)
+  expected_setup_time: "10-20 min (pip install of pinned cu126 wheels; no external downloads besides pip packages)"
+  expected_inference_time: "~9-10 min for 405 clips (GPU); ~20-25 min CPU-only. Budget documented in README §3: ~45 min per 2000 clips (GPU)"
+
+network:
+  required_during_setup: true
+  required_during_inference: false
+  allowed_hosts: ["pypi.org", "download.pytorch.org"]
+  explanation: "Network is needed once, to pip install pinned Python packages (or to `docker build`). No network access is used or required while inference.sh runs; verified in Docker with --network none."
+
+api:
+  required: false
+  provider: null
+  model_and_version: null
+  configuration_example: null
+  credential_environment_variables: []
+  estimated_usage: null
+
+artifacts:
+  - name: "model.pth"
+    purpose: "Primary verification pack (PACK4_17U9): fused ensemble used to reproduce Selected Submission 56094379 (submission_pack4_17u9_infer.csv). NumPy .npz archive despite the .pth extension; contains VideoMAEv2 ViT-B/16 (int6), VideoMAEv2 ViT-S/16 IR branch (int5, fold 0), CTR-GCN folds 0/3/4 (int8), HistGradientBoosting on IMU features, IMU network x5 (int8), YOLO11n detector (fp16), fusion config, adaptation prototypes, decoder tables."
+    path: "artifacts/model.pth"
+    source_url: null
+    revision_or_version: null
+    sha256: null  # not required by the template for model files, only for the submitted CSVs (see submission/submission_info.yaml); computed on request
+    required: true
+  - name: "model_pack3ira.pth"
+    purpose: "Secondary verification pack (pack3ira / w20): reproduces Selected Submission 56058031 (submission_pack3ira_w20_infer.csv). Same branch set as model.pth, but ViT-B/16 trained with fold-3 users held out, IMU TCN x3 instead of the IMU network, no EM re-estimation step."
+    path: "artifacts/model_pack3ira.pth"
+    source_url: null
+    revision_or_version: null
+    sha256: null
+    required: true
+  - name: "VideoMAEv2 ViT-B/16 distilled backbone (pretrained, fine-tuned by us)"
+    purpose: "Initialisation for the `vit` branch before fine-tuning on the CUHK-X training split only (17 of 18 users, user9 held out for pack model.pth; fold-3 split for model_pack3ira.pth)."
+    path: null
+    source_url: "https://github.com/OpenGVLab/VideoMAEv2 (checkpoint distill/vit_b_k710_dl_from_giant.pth)"
+    revision_or_version: "distilled from ViT-g on Kinetics-710"
+    sha256: null
+    required: false
+  - name: "VideoMAEv2 ViT-S/16 distilled backbone (pretrained, fine-tuned by us)"
+    purpose: "Initialisation for the `vit_ir` (IR) branch before fine-tuning on the CUHK-X training split only."
+    path: null
+    source_url: "https://github.com/OpenGVLab/VideoMAEv2 (checkpoint distill/vit_s_k710_dl_from_giant.pth)"
+    revision_or_version: "distilled from ViT-g on Kinetics-710"
+    sha256: null
+    required: false
+  - name: "PYSKL CTR-GCN NTU-60 pretrain (pretrained, fine-tuned by us)"
+    purpose: "Initialisation for the skeleton CTR-GCN branch before fine-tuning on the CUHK-X training split."
+    path: null  # not included in this package: only used at training time; the fine-tuned weights it produced are already packed inside model.pth / model_pack3ira.pth
+    source_url: "https://github.com/kennymckormick/pyskl (NTU-60 2-D joint checkpoint)"
+    revision_or_version: "NTU-60 xsub, 2-D joint"
+    sha256: null
+    required: false
+  - name: "YOLO11n person detector (pretrained, used frozen)"
+    purpose: "Person bounding boxes on raw IR frames, used only to define the crop window for the video branches. Weights are packaged inside model.pth / model_pack3ira.pth; used frozen, not fine-tuned."
+    path: null
+    source_url: "https://github.com/ultralytics/ultralytics (YOLO11n, AGPL-3.0)"
+    revision_or_version: "yolo11n"
+    sha256: null
+    required: false
+
+external_training_data: []
+# No external dataset was used to train either Selected Submission's components. The team explored
+# the organizer-released Large Model Track HAU/HARn data (pre-/co-training, permitted per organizer
+# Q&A) but every HAU-augmented pack scored below the Selected packs on the public leaderboard and was
+# NOT used in model.pth or model_pack3ira.pth; no LMT declaration is required. See docs/findings.md
+# (15 Sep entries) for the full comparison.
+
+reproducibility:
+  random_seeds: [0]  # fixed training seed; inference itself is deterministic (quantised int weights, no test-time randomness)
+  precision_mode: "Mixed: int8/int6/int5 per-branch weight quantisation inside the pack; fp32/fp16 compute at inference (fp16 for YOLO11n only). See docs/tech_report.md for per-branch quantisation bit-widths."
+  expected_nondeterminism: "None expected. Rehearsals on 8-9 Sep 2026 reproduced submission_pack4_17u9_infer.csv and submission_pack3ira_w20_infer.csv on 405/405 clips from the raw Kaggle test zip, both on GPU and CPU-only, from multiple working directories. A documented 1-of-405 fallback-box difference occurred in one CPU/GPU-sharing rehearsal (YOLO detection jitter on a single borderline clip); it does not affect the decoded label."
+  comparison_notes: "Compare organizer-run output.csv to submission/final_submission_1.csv (primary, submission_id 56094379) or final_submission_2.csv (submission_id 56058031) row-for-row on the `prediction` column; `path` ordering follows the input directory's clip order. Any difference should be investigated (see README §7-8 for the one known jitter case)."
+
+inference_input:
+  type: "official_label_free_testing_directory"
+  path_supplied_by_organizer: true
+  published_layout_preserved: true
+  participant_preprocessing_included: true
+
+declarations:
+  honor_declaration_form: "declarations/CUHK-X_Honor_Declaration.docx"
+  signed_declaration: "declarations/CUHK-X_Honor_Declaration.docx"

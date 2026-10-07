@@ -1,0 +1,27 @@
+team_name: "Timass"
+track: "small"  # Small Model Track
+primary_verification_submission_id: "56094379"  # higher private score (0.86764 > 0.86274), confirmed via Kaggle API
+selected_final_submissions:
+  - selection_slot: 1
+    submission_id: "56094379"
+    kaggle_filename: "submission_pack4_17u9_infer.csv"
+    submitted_at_utc: "2026-09-08T08:25:14Z"
+    public_score: "0.86069"
+    private_score: "0.86764"
+    csv_path: "submission/final_submission_1.csv"
+    csv_sha256: "970d4753cde6372d5ca343c13ed77e8cb20fec300d860e12e676829fe84f91aa"
+    model_checkpoint_config_mapping:
+      model_or_checkpoint: "artifacts/model.pth (pack PACK4_17U9, NumPy .npz, 93.99 MiB): VideoMAEv2 ViT-B/16 int6 (17 of 18 training users, user9 held out) + VideoMAEv2 ViT-S/16 IR int5 (fold 0) + CTR-GCN folds 0/3/4 int8 + HistGradientBoosting on IMU features + IMU network x5 int8 + YOLO11n fp16 person detector"
+      configuration: "configs/final.yaml; inference.sh default (CHECKPOINT unset -> artifacts/model.pth); temperature-scaled arithmetic fusion, session decoder (2 passes), session-level prototype adaptation, label-free EM re-estimation of transition tables"
+  - selection_slot: 2
+    submission_id: "56058031"
+    kaggle_filename: "submission_pack3ira_w20_infer.csv"
+    submitted_at_utc: "2026-09-06T14:59:37Z"
+    public_score: "0.86069"
+    private_score: "0.86274"
+    csv_path: "submission/final_submission_2.csv"
+    csv_sha256: "90d9ed7eb694bb14817968627aaea2cca17a45205538dc332739940df6e54268"
+    model_checkpoint_config_mapping:
+      model_or_checkpoint: "artifacts/model_pack3ira.pth (pack pack3ira / w20): same branch set as PACK4_17U9 but VideoMAEv2 ViT-B/16 trained with fold-3 users held out (users 1-8, 16, 17, 19-23 in training), IMU TCN x3 instead of the IMU network, no EM step"
+      configuration: "configs/final.yaml (secondary_pack section); run: `bash inference.sh <data_dir> <output_csv> 56058031` (this pack's Submission ID as the third argument selects artifacts/model_pack3ira.pth internally, see inference.sh)"
+notes: "Both Selected submissions scored the identical public LB 0.86069; private scores differ (0.86764 vs 0.86274), confirmed via Kaggle API (kaggle competitions submissions --csv). #1 (PACK4_17U9, higher private score) is primary_verification_submission_id per the verification guide's rule."
