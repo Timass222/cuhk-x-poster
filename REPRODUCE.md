@@ -2,6 +2,8 @@
 
 This is the guide that shipped with the frozen verification package. In this public repository,
 `artifacts/model.pth` is not stored in Git: download it from the GitHub release (see README.md).
+Some files named below exist only in the private package and are not published here: `docs/findings.md`,
+`docs/rules_qa.md`, `declarations/`, `archives/`, `logs/` and `artifacts/model_pack3ira.pth`.
 
 Verification package for the CUHK-X Challenge, Small Model Track.
 

@@ -2,3 +2,5 @@
 *.sh text eol=lf
 *.pt binary
 *.pth binary
+# keep the submitted CSVs byte-identical (their SHA-256 is recorded in submission_info.yaml)
+submission/*.csv -text

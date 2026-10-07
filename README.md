@@ -49,9 +49,17 @@ normalised over all 40 classes that is 0.74 vs 0.07. Full forward–backward giv
 
 1. Download `model.pth` from the [latest release](https://github.com/Timass222/cuhk-x-poster/releases/latest)
    into `artifacts/model.pth`.
-2. Install the pinned environment: `pip install -r environment/requirements.txt`, or build
-   `environment/Dockerfile`.
-3. `bash inference.sh <test_dir> <output.csv>` reproduces `submission/final_submission_1.csv`.
+2. Create `.venv` in the repo root (inference.sh uses it, or the interpreter in `$PYTHON`) and install the pinned
+   environment, or build `environment/Dockerfile`:
+   ```
+   pip install --index-url https://download.pytorch.org/whl/cu126 --extra-index-url https://pypi.org/simple \
+       -r environment/requirements.txt -c environment/constraints-venv.txt
+   ```
+3. `bash inference.sh <test_dir> <output.csv>` reproduces `submission/final_submission_1.csv` (405/405).
+   `<test_dir>` is the folder that contains `small_model_track_test/`, as in the Kaggle zip.
+
+Only the primary pack is released. The secondary submission (`inference.sh … 56058031`) needs
+`model_pack3ira.pth`, which is not published.
 
 Full reproduction guide: [REPRODUCE.md](REPRODUCE.md). Method and numbers: [docs/tech_report.md](docs/tech_report.md).
 

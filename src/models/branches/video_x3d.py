@@ -13,13 +13,14 @@ from __future__ import annotations
 
 import torch
 import torch.nn as nn
-from pytorchvideo.models.hub import x3d_m
 
 
 class VideoX3D(nn.Module):
     def __init__(self, in_channels=2, num_classes=40, n_frames=16,
                  pretrained=True):
         super().__init__()
+        # imported here: the final packs do not use X3D, so inference does not need pytorchvideo
+        from pytorchvideo.models.hub import x3d_m
         self.n_frames = n_frames
         net = x3d_m(pretrained=pretrained)
         # первый Conv3d с in_channels=3 — пространственный конв стема

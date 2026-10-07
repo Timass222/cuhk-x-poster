@@ -35,5 +35,6 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 
 COPY inference.sh README.md ./
 COPY src/ src/
-COPY artifacts/model.pth artifacts/model_pack3ira.pth artifacts/
+# public repo: only the primary pack is released (see README); add model_pack3ira.pth here to run submission 56058031
+COPY artifacts/model.pth artifacts/
 CMD ["bash", "inference.sh"]
