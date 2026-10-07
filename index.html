@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Timestamps are a free sensor · Team Timass</title>
+<meta name="description" content="CUHK-X Challenge, UbiComp / ISWC 2026: a label-free session decoder for RGB-free activity recognition.">
+<style>
+  :root { --ink: #0b1b2e; --grey: #3d4a5c; --line: #c3ccd7; --amber: #f2a516; --pale: #fff0c7; --bg: #ffffff; --card: #f4f6f9; }
+  @media (prefers-color-scheme: dark) {
+    :root { --ink: #eef2f7; --grey: #aab4c2; --line: #3a4656; --pale: #2a2412; --bg: #0b1b2e; --card: #13263d; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+         font: 17px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif; }
+  main { max-width: 620px; margin: 0 auto; padding: 20px 16px 40px; }
+  .eyebrow { font-size: 14px; color: var(--grey); margin: 0 0 6px; }
+  h1 { font-size: 30px; line-height: 1.15; margin: 0 0 4px; letter-spacing: -0.01em; }
+  .rule { width: 72px; height: 6px; background: var(--amber); margin: 12px 0 18px; }
+  video { display: block; width: 100%; aspect-ratio: 4 / 5; border-radius: 10px; background: var(--card); border: 1px solid var(--line); }
+  .cap { font-size: 14px; color: var(--grey); margin: 8px 0 22px; }
+  p { margin: 0 0 12px; }
+  b { font-weight: 700; }
+  .actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 22px 0 26px; }
+  .btn { flex: 1 1 200px; display: block; text-align: center; padding: 13px 16px; border-radius: 10px;
+         font-weight: 700; text-decoration: none; color: var(--ink); border: 2px solid var(--line); }
+  .btn.primary { background: var(--amber); border-color: var(--amber); color: #0b1b2e; }
+  .how { border-top: 1px solid var(--line); padding-top: 18px; margin-bottom: 22px; font-size: 15px; }
+  .how h2 { font-size: 19px; margin: 0 0 10px; }
+  .formula { background: var(--card); border-left: 4px solid var(--amber); padding: 8px 12px; border-radius: 6px; overflow-x: auto; white-space: nowrap; }
+  footer { font-size: 14px; color: var(--grey); border-top: 1px solid var(--line); padding-top: 14px; }
+</style>
+</head>
+<body>
+<main>
+  <p class="eyebrow">Team Timass · CUHK-X Challenge · UbiComp / ISWC 2026</p>
+  <h1>Timestamps are a free sensor</h1>
+  <div class="rule"></div>
+
+  <video src="decoder_ladder.mp4" poster="poster.jpg" autoplay muted loop playsinline controls preload="metadata"></video>
+  <p class="cap">What the session decoder changes, step by step. Real hidden-test clips; about 1 minute, no sound.</p>
+
+  <p>We recognise <b>40 daily activities</b> from depth, infrared, skeleton and IMU clips, without RGB, on people never seen in training.</p>
+  <p>Clip start times chain the clips into sessions. A second-order decoder labels the whole session with no test labels: <b>75.8 → 86.4 %</b> on 405 hidden-test clips.</p>
+  <p>About <b>3/4 of that gain</b> comes from the order of everyday actions. The whole model is 94 MiB.</p>
+
+  <div class="actions">
+    <a class="btn primary" href="https://github.com/Timass222/cunh_x-poster">Code &amp; weights</a>
+    <a class="btn" href="https://github.com/Timass222/cunh_x-poster/blob/main/docs/tech_report.md">Technical report</a>
+  </div>
+
+  <section class="how">
+    <h2>How the decoder result is computed</h2>
+    <p>For every clip, each of the 40 classes gets</p>
+    <p class="formula">score(c) ∝ clip(c)<sup>0.85</sup> × T(a, b → c)</p>
+    <p class="formula">T(a, b → c) ∝ (0.75·P<sub>2</sub>(c | a, b) + 0.25·P<sub>1</sub>(c | b))<sup>0.75</sup></p>
+    <p>P<sub>1</sub> and P<sub>2</sub> are counted on the training lists, given the last one or two actions. The power 0.75 and renormalising over the 40 classes flatten them, so unseen transitions keep a small chance. Forward–backward runs this over the whole session, averaging over uncertain earlier clips and looking at the next clip too.</p>
+    <p><b>Example, step 1 of the video</b> (one action back only, so T ∝ P<sub>1</sub><sup>0.75</sup>). After Peel fruits, Eat food has P<sub>1</sub> = 0.545 → 0.545<sup>0.75</sup> = 0.634 → 0.34 after renormalising. The clip alone gives Eat food 0.116<sup>0.85</sup> = 0.16 and Use a mobile phone 0.382<sup>0.85</sup> = 0.44. Products: 0.16 × 0.34 = 0.054 and 0.44 × 0.011 = 0.005, which over all 40 classes is 0.74 vs 0.07. Full forward–backward gives 0.72 vs 0.07.</p>
+  </section>
+
+  <footer>Team Timass · CUHK-X Challenge, Small Model Track · Dataset: <a href="https://arxiv.org/abs/2512.07136" style="color:inherit">CUHK-X</a></footer>
+</main>
+</body>
+</html>
