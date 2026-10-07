@@ -1,9 +1,9 @@
 # weights are published as release assets, not in Git
 artifacts/*.pth
-# local data, outputs, environments, secrets
-data/
-work/
-private/
+# local data, outputs, environments, secrets (repo root only)
+/data/
+/work/
+/private/
 *.env
 !environment/credentials.env.example
 __pycache__/
