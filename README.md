@@ -62,6 +62,16 @@ weighs the uncertainty of the earlier clips.
 If a pair (a, b) never occurred in training at all, P2 is uniform (1/40) and T falls back to a flattened first-order
 table. On the hidden test this applies to 23 of the 146 clips that have two predecessors in their list.
 
+**Adaptation to the session (+1.0 point, no test labels).** After the first decoder pass, every session gets class
+prototypes: the mean ViT-B feature (fc_norm, 768-d) of its clips with each decoded label, shrunk toward the training
+prototype of that class with weight 3 clips. The cosine of each clip to the 40 prototypes, through a softmax at
+temperature 0.05, multiplies the fused probabilities with power 0.3, and the session is decoded again. Then transitions
+counted on the decoded test sessions are mixed into the training tables at 30 % (one EM step) for a third pass. On the
+hidden test the prototypes change 8 answers and EM 3 more, a net +4 correct clips (346 → 350); in 4 of the 8 cases the
+prototypes restore the clip's own answer that the transitions had overruled. Prototypes rely on repeated clips of the
+same action within a session, so we report this step separately from the learned transitions.
+Code: [src/infer/pack_infer.py](src/infer/pack_infer.py), constants in `fusion_cfg` of `model.pth`.
+
 ## Run it
 
 1. Download `model.pth` from the [latest release](https://github.com/Timass222/cuhk-x-poster/releases/latest)
