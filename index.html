@@ -65,6 +65,7 @@
   td { text-align: right; padding: 8px 5px; border-bottom: 1px solid var(--line); vertical-align: top; }
   th:first-child, td:first-child { text-align: left; padding-left: 0; }
   td small { display: block; font-size: 12px; color: var(--soft); white-space: nowrap; }
+  table.txt th, table.txt td { text-align: left; }
   tr.win td { background: var(--hl); font-weight: 700; }
   tr.win td:first-child { box-shadow: inset 4px 0 0 var(--amber); padding-left: 10px; }
 
@@ -119,6 +120,7 @@
 
     <ul class="defs">
       <li><span class="k">clip(c)</span><span>probability from the five fused branches for this clip alone</span></li>
+      <li><span class="k">^0.85</span><span>weight of the clip's vote against the transitions: in logs, 0.85·log clip + log T, so 3.3 : 1 odds become 2.8 : 1</span></li>
       <li><span class="k">P<sub>1</sub>, P<sub>2</sub></span><span>how often c followed the last one or the last two actions in the training lists</span></li>
       <li><span class="k">^0.75</span><span>with renormalising over the 40 classes, flattens the tables, so unseen transitions keep a small chance</span></li>
       <li><span class="k">session</span><span>forward–backward runs this over the whole session, averaging over uncertain earlier clips and looking at the next clip too</span></li>
@@ -171,6 +173,39 @@
     </article>
 
     <p class="callout"><b>Pairs never seen in training.</b> P<sub>2</sub> is uniform (1/40), so T falls back to a flattened first-order table. This happens for 23 of the 146 test clips with two predecessors.</p>
+
+    <article class="ex" style="margin-top: 16px">
+      <div class="ex-head">
+        <div class="badge">3</div>
+        <div><h3>After the first pass: adaptation to the session</h3><p>+1.0 point on the hidden test · no test labels</p></div>
+      </div>
+      <p class="ctx">The first pass gives every clip a label. The session's own clips then show how this person performs each action, and the session is decoded again.</p>
+      <ol class="steps">
+        <li><b>Session prototypes</b>For each class, average the ViT-B features (768 numbers) of the session's clips with that label, mixed with the class's training prototype as if it were 3 extra clips: c = (Σ session features + 3·c<sub>train</sub>) / (n + 3). Classes absent from the session keep the training prototype.</li>
+        <li><b>Extra vote</b>Cosine of every clip to the 40 prototypes → softmax at temperature 0.05. The fused clip probabilities are multiplied by this vote to the power 0.3.</li>
+        <li><b>Decode again</b>Same decoder, second pass.</li>
+        <li><b>Update the transitions (EM)</b>Transitions counted on the decoded test sessions are mixed in at 30 % with the training counts, then the same formula and a third pass.</li>
+      </ol>
+      <div class="chips" style="margin: 2px 0 14px">
+        <span class="chip">prototype prior 3 clips</span><span class="chip">temperature 0.05</span><span class="chip">vote power 0.3</span><span class="chip">EM 30 %</span>
+      </div>
+      <p class="ctx"><b>What the prototypes changed on the hidden test</b> (8 clips):</p>
+      <div class="tbl-wrap"><table class="txt">
+        <tr><th>Clip</th><th>after transitions</th><th>after prototypes</th><th>clip alone</th></tr>
+        <tr><td>0313</td><td>Pour drinks</td><td>Check the time</td><td><b>Check the time</b></td></tr>
+        <tr><td>0100</td><td>Sit down</td><td>Make a phone call</td><td><b>Make a phone call</b></td></tr>
+        <tr><td>0036</td><td>Comb hair</td><td>Take medicine</td><td><b>Take medicine</b></td></tr>
+        <tr><td>0299</td><td>Headphones</td><td>Drink water</td><td><b>Drink water</b></td></tr>
+        <tr><td>0105</td><td>Write</td><td>Read documents</td><td>Write</td></tr>
+        <tr><td>0158</td><td>Eat food</td><td>Drink water</td><td>Eat food</td></tr>
+        <tr><td>0196</td><td>Play games</td><td>Sit down</td><td>Play games</td></tr>
+        <tr><td>0065</td><td>Do squats</td><td>Tap the keyboard</td><td>Do squats</td></tr>
+      </table></div>
+      <p class="ctx">In 4 of 8 cases (bold) the prototypes bring back the clip's own answer that the transitions had overruled. In 0313 the clip alone says Check the time 0.34 vs Pour drinks 0.06; the routine pulled it to Pour drinks, and this person's own prototypes pulled it back. The last case is probably a cascade: neighbouring clips changed, and the one-action-per-list rule moved this one.</p>
+      <p class="ctx">EM changed 3 more clips (0059 Comb hair → Massage oneself, 0075 Comb hair → Take medicine, 0205 Brush teeth → Wash face).</p>
+      <p class="result"><b>Net: +4 correct clips</b> (346 → 350 of 405) from these 11 changes. Which single changes are right we can't tell: the test labels are hidden.</p>
+      <p class="callout"><b>Why it is counted separately.</b> Prototypes need several clips of the same action in a session, and here every list is repeated three times. Homes with fewer repeats would gain less, so the poster shows adaptation as its own segment, not as part of the learned order.</p>
+    </article>
   </section>
 
   <footer>Team Timass · CUHK-X Challenge, Small Model Track · Dataset: <a href="https://arxiv.org/abs/2512.07136">CUHK-X</a></footer>
