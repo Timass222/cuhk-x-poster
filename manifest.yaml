@@ -77,13 +77,6 @@ artifacts:
     revision_or_version: "distilled from ViT-g on Kinetics-710"
     sha256: null
     required: false
-  - name: "PYSKL CTR-GCN NTU-60 pretrain (pretrained, fine-tuned by us)"
-    purpose: "Initialisation for the skeleton CTR-GCN branch before fine-tuning on the CUHK-X training split."
-    path: null  # not included in this package: only used at training time; the fine-tuned weights it produced are already packed inside model.pth / model_pack3ira.pth
-    source_url: "https://github.com/kennymckormick/pyskl (NTU-60 2-D joint checkpoint)"
-    revision_or_version: "NTU-60 xsub, 2-D joint"
-    sha256: null
-    required: false
   - name: "YOLO11n person detector (pretrained, used frozen)"
     purpose: "Person bounding boxes on raw IR frames, used only to define the crop window for the video branches. Weights are packaged inside model.pth / model_pack3ira.pth; used frozen, not fine-tuned."
     path: null

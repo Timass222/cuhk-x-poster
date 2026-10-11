@@ -95,8 +95,9 @@ Full reproduction guide: [REPRODUCE.md](REPRODUCE.md). Method and numbers: [docs
 - The CUHK-X dataset is not included; it is distributed by the challenge organisers
   ([paper](https://arxiv.org/abs/2512.07136)).
 - YOLO11n person detector by Ultralytics, AGPL-3.0: `src/infer/yolo11n.pt` and a copy inside `model.pth`.
-- Backbone initialisations: VideoMAEv2 ViT-B/16 and ViT-S/16 (OpenGVLab), PYSKL CTR-GCN (NTU-60). Their
-  licences apply to the derived weights.
+- Backbone initialisations: VideoMAEv2 ViT-B/16 and ViT-S/16 (OpenGVLab). Their licences apply to the derived
+  weights. The CTR-GCN skeleton branch is trained from scratch on the COCO-17 skeleton graph; no pretrained
+  skeleton weights are used.
 
 ## Licence
 

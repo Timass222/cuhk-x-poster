@@ -23,7 +23,7 @@ training:
     quantisation: "int5"
   skeleton_branch:
     model: "CTR-GCN, folds 0/3/4"
-    pretrain: "PYSKL NTU-60 (2-D, joint)"
+    pretrain: "none (trained from scratch, COCO-17 graph)"
     quantisation: "int8"
   imu_branch:
     models: ["HistGradientBoosting (scikit-learn) on physical IMU features", "IMU network x5 folds, int8"]

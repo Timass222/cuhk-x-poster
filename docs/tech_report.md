@@ -52,7 +52,7 @@ Companion documents: `README.md` (how to run, rehearsal logs), `docs/findings.md
 |---|---|---|---|---|---|---|
 | `vit` | depth-RGB + IR crops 224², 16 frames | VideoMAEv2 ViT-B/16 (86.6 M) | `vit_b_k710_dl_from_giant` (distilled from ViT-g, Kinetics-710) | 20 ep., AdamW lr 2e-4, wd .05, LLRD .75, drop-path .2, EMA, bs 16 + grad-ckpt; **17 users (user9 held out)** | int6 per-output-row symmetric | 62.7 MiB |
 | `vit_ir` | IR crops 224², 16 frames | VideoMAEv2 ViT-S/16 (22 M) | `vit_s_k710_dl_from_giant` | same recipe, drop-path .1; fold 0 | int5 | 13.2 MiB |
-| `ctrgcn` ×3 | skeleton T×17×3 | CTR-GCN | PYSKL NTU-60 (2-D, joint) | 5-fold, folds 0/3/4 shipped | int8 | 3 × 1.7 MiB |
+| `ctrgcn` ×3 | skeleton T×17×3 | CTR-GCN | none (trained from scratch, COCO-17 graph) | 5-fold, folds 0/3/4 shipped | int8 | 3 × 1.7 MiB |
 | `imu_hgb` | 477 IMU statistics | HistGradientBoosting (150 iters, 15 leaves) | — | all 18 users | pickle, gzip | 4.0 MiB |
 | `imu_v2` ×5 | 5 × 9 × 32 IMU tensor | small conv net (stems 32/64, temporal 160, head 128) | — | 5-fold, all folds shipped | int8 | 5 × 0.44 MiB |
 
@@ -151,7 +151,9 @@ on ≤ 1 clip of 405.
 * VideoMAEv2 ViT-B/16 and ViT-S/16 distilled from ViT-g on Kinetics-710
   (OpenGVLab/VideoMAEv2, `distill/vit_b_k710_dl_from_giant.pth`, `distill/vit_s_k710_dl_from_giant.pth`;
   Apache-2.0 / MIT code). Fine-tuned by us on the CUHK-X training split only.
-* CTR-GCN initialised from a PYSKL NTU-60 (2-D, joint) checkpoint (Apache-2.0).
+* CTR-GCN skeleton branch: trained from scratch on the COCO-17 skeleton graph; no pretrained skeleton
+  weights are used. (`src/train/train_skeleton.py` has an optional `--init` flag for experiments; it was
+  not used for the shipped folds.)
 * YOLO11n person detector (Ultralytics, AGPL-3.0), used only to cut crops.
 * Earlier packs (not in the final model) used R(2+1)D-34 IG65M→Kinetics-400 (facebookresearch/VMZ)
   and torchvision R(2+1)D-18 Kinetics-400; UMT-B and InternVideo2 were screened and not used.

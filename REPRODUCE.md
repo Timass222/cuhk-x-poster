@@ -36,7 +36,7 @@ Late-fusion ensemble over five unimodal branches, all trained on the CUHK-X Smal
   publicly distilled Kinetics-710 checkpoint, fine-tuned by us. Quantised int6 for the pack.
 - `vit_ir` — VideoMAEv2 ViT-S/16 (22 M params), IR crops, 224 px, 16 frames, same pretraining lineage,
   fine-tuned fold 0. Quantised int5.
-- Skeleton — CTR-GCN, folds 0/3/4, initialised from a PYSKL NTU-60 2-D joint checkpoint. Quantised int8.
+- Skeleton — CTR-GCN, folds 0/3/4, trained from scratch on the COCO-17 graph (no pretrained skeleton weights). Quantised int8.
 - IMU (statistical) — HistGradientBoosting (scikit-learn) on 450 hand-built features.
 - IMU (network) — a small IMU network, 5 folds, int8 (pack #1) or an IMU TCN x3 (pack #2, no int quantisation
   difference in kind, same slot).
@@ -175,7 +175,7 @@ See `manifest.yaml` → `artifacts` for the complete machine-readable list. Summ
 - VideoMAEv2 ViT-B/16 and ViT-S/16, distilled from ViT-g on Kinetics-710 — public pretrained backbones,
   fine-tuned by us on the CUHK-X training split only. Source: `github.com/OpenGVLab/VideoMAEv2`, checkpoints
   `distill/vit_b_k710_dl_from_giant.pth` and `distill/vit_s_k710_dl_from_giant.pth` (Apache-2.0 / MIT code).
-- CTR-GCN initialised from a PYSKL NTU-60 (2-D, joint) checkpoint (Apache-2.0), fine-tuned by us.
+- CTR-GCN skeleton branch: trained from scratch on the COCO-17 skeleton graph; no pretrained skeleton weights.
 - YOLO11n person detector (Ultralytics, AGPL-3.0), used frozen, not fine-tuned; weights are bundled inside
   both packs.
 - No API models or services are used. No credentials of any kind are required or included.
